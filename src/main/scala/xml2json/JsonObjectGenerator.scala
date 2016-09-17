@@ -4,20 +4,20 @@ package xml2json
   * 9/11/16 8:47 PM
   */
 object JsonObjectGenerator {
-    def fromAST(rootAstNode: ASTNode): JsonObj = {
-        rootAstNode match {
-            case elem: TextElem =>
-                JsonObj(Seq(JsonField(JsonName("name"), JsonValue(elem.text))))
-            case elem: DOMElem =>
-                val nameField = JsonField(JsonName("name"), JsonValue(elem.name))
-                val childElems: Seq[Json] = elem.textAndChildren.map {
-                    case TextElem(name: String) => JsonName(name)
-                    case child: DOMElem => JsonObjectGenerator.fromAST(child)
-                    case err => throw new RuntimeException(s"unexpected child elem: $err")
-                }
-                val childrenField = JsonField(JsonName("children"), JsonArr(childElems))
-                JsonObj(nameField :: childrenField :: Nil)
-        }
+    def fromAST(rootAstNode: ASTNode): JsonObj = rootAstNode match {
+        case elem: TextElem => JsonObj(Seq(JsonField(JsonName("name"), JsonValue(elem.text))))
+        case elem: DOMElem =>
+            val nameField = JsonField(JsonName("name"), JsonValue(elem.name))
+            val otherFields = elem.simpleFields.toList.map {
+                case (k, v) => JsonField(JsonName(k), JsonValue(v))
+            }
+            val childElems: Seq[Json] = elem.textAndChildren.map {
+                case TextElem(name: String) => JsonName(name)
+                case child: DOMElem => JsonObjectGenerator.fromAST(child)
+                case err => throw new RuntimeException(s"unexpected child elem: $err")
+            }
+            val childrenField = JsonField(JsonName("children"), JsonArr(childElems))
+            JsonObj(nameField :: otherFields ::: childrenField :: Nil)
     }
 }
 

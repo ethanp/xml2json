@@ -55,7 +55,7 @@ object JsonPrinter {
         case arr: JsonArr => compactPrint(arr)
         case JsonName(name) => "\"%s\"".format(name)
         case JsonField(jsonName, jsonValue) =>
-            throw new RuntimeException("shouldn't have a field here")
+            compactPrintJson(jsonName) + ":" + compactPrintJson(jsonValue)
         case JsonValue(value) => value match {
             case s: String => "\"%s\"".format(s)
             case x => x.toString

@@ -24,7 +24,6 @@ class Parser(tokens: Iterator[XMLToken]) {
             }
         }
         tokens foreach { cur =>
-            println(cur)
             cur match {
                 case Name(name: String) =>
                     if (previousToken == LeftBracket) {
@@ -92,7 +91,7 @@ case class TextElem(text: String) extends ASTNode
 case class DOMElem(
     // e.g. for <p></p> or <p/> it would be "p"
     name: String,
-    // attribute name-value pairs (TODO anything else?)
+    // attribute name-value pairs
     simpleFields: mutable.Map[String, Any] = mutable.Map.empty,
     // interspersed text sequences and child nodes
     textAndChildren: mutable.ArrayBuffer[ASTNode] = mutable.ArrayBuffer.empty
