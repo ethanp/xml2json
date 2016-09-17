@@ -23,10 +23,6 @@ object JsonPrinter {
         var currIndent = 0
         var inAString = false
         def indent: String = " " * (INDENT_WIDTH * currIndent)
-        def downOneIndent(): Unit = {
-            result.setLength(result.length - INDENT_WIDTH)
-            currIndent -= 1
-        }
         while (compact.hasNext) {
             val next = compact.next()
             next match {
@@ -35,9 +31,8 @@ object JsonPrinter {
                     currIndent += 1
                     result append indent
                 case '}' | ']' =>
-                    result append "\n" + indent
-                    downOneIndent()
-                    result append next
+                    currIndent -= 1
+                    result append "\n" + indent + next
                 case '"' =>
                     // quote-escaping is not implemented
                     inAString = !inAString
